@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Price Comparison</title>
+    <link rel="stylesheet" href="{% static 'pc/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+</head>
+<body>
+    <div id="productSection" class="product-section hide_section">
+        <button class="close_product_section" onclick="closeDiv()"><span class="material-symbols-outlined">close</span></button>
+        <div id="productSectionContent" class="product-section-content">
+
+        </div>
+    </div>
+    <div id="product_overlay" class="hide"></div>
+    <div class="navbar-position-absolute">
+        {% include 'core/nav.html' %}
+    </div>
+    <div class="pc_container">
+        <div class="pc_container_top">
+            <form class="pc_container_top_search" id="search_form" method="GET">
+                <i class="fa fa-search"></i>
+                <input type="text" id="search" value="{{query}}" name="query" placeholder="Search Books">
+            </form>
+        </div>
+        <div class="pc_container_products" id="pc_container_products">
+            {% include 'pc/search.html' %}
+        </div>
+    </div>
+    <script src="{% static 'pc/js/index.js' %}"></script>
+</body>
+</html>

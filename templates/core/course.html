@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>CHRISTIAN STUDENTS SACCO</title>
+        {% load static %}
+        <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+       <link rel="preconnect" href="https://fonts.googleapis.com">
+       <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+       <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;600;700&display=swap" rel="stylesheet">
+       <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+     </head>
+     <body>
+        <section class="sub-header">
+        {% include 'core/nav.html' %} 
+<!---------Javascript for toggle menu--------> 
+       <h1>Our Courses</h1>
+                
+        </section>
+
+        <!--course-->
+
+        <section class="course">
+            <h1>Courses We Offer</h1>
+            <p>lorem ipsum sit amet, consectetur adipiscing elit.</p>
+            <div class="row">
+                <div class="course-col"> <!---col means column i think for all the courses-->
+                    <h3>Intermediate</h3>
+                    <p>lerem ipsum thjw  jeien d ejjr  urujnfb hrhnd jrjjfn hjjr
+                        rienfnki itjnfbs ijenfjk</p>
+                </div>
+            <div class="course-col">
+                <h3>Degree</h3>
+                <p>lerem ipsum thjw  jeien d ejjr  urujnfb hrhnd jrjjfn hjjr
+                    rienfnki itjnfbs ijenfjk</p>
+            </div>
+            <div class="course-col">
+                <h3>Post-graduation</h3>
+                <p>lerem ipsum thjw  jeien d ejjr  urujnfb hrhnd jrjjfn hjjr
+                    rienfnki itjnfbs ijenfjk</p>
+            </div>
+        </div>
+        </section>
+
+        <!---facilities--->
+        <section class="facilities">
+            <h1>Our facilities</h1>
+            <p>lorem ipsum sit amet, consectetur adipiscing elit.</p>
+            <div class="row">
+                <div class="facilities-col"> 
+                    <img src="{% static 'core/image/library.png' %}">
+                    <h3>World Class library</h3>
+                    <p>lorem ipsum sit amet, consectetur adipiscing elit.</p>
+                </div>
+                <div class="facilities-col"> 
+                    <img src="{% static 'core/image/basketball.png' %}">
+                    <h3>Largest Playground</h3>
+                    <p>lorem ipsum sit amet, consectetur adipiscing elit.</p>
+                </div>
+                <div class="facilities-col">
+                    <img src="{% static 'core/image/cafeteria.png' %}">
+                    <h3>Tasty and Healthy Food</h3>
+                    <p>lorem ipsum sit amet, consectetur adipiscing elit.</p>
+                </div>
+            </div>
+        
+        </section>
+
+<!---footer-->
+<section class="footer">
+    <h4>About Us</h4>
+    <p>lorem ipsum sit amet, consectetur adipiscing elit.
+        tyyhefg eguebheh fudbtfyef <br>yebfuwefbuhbeyh uhbefeufbuie
+        ehbuefbeihfei uibeiubve8fi iubeuiebfui uibeiufvbeiufb
+        efbefibei9 eubbeifb
+    </p>
+
+    <div class="icons">
+                <i class="fa fa-facebook"></i>
+                <i class="fa fa-twitter"></i>
+                <i class="fa fa-instagram"></i>
+                <i class="fa fa-linkedin"></i>
+    </div>
+    <p>Made with<i class="fa fa-heart-o"></i>by Nathan Owino</p>
+    
+</section>
+
+
+    </body>
+</html>

@@ -1,0 +1,48 @@
+<div class="pc_container_products_wrapper">
+    <div class="pc_container_products_top">
+        <h3>{{ text }}</h3>
+        <div class="pc_container_products_top_pages">
+            {% if page_obj.has_previous %}
+            <a href="?page=1">&laquo; 1</a>
+            <!-- <a href="?page={{ page_obj.previous_page_number }}">previous</a> -->
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+            {% if num == page_obj.number %}
+                <span class="current">{{ num }}</span>
+            {% elif num == page_obj.number|add:'-1' or num == page_obj.number|add:'1' %}
+                <a href="?page={{ num }}">{{ num }}</a>
+            {% elif num == page_obj.number|add:'-2' or num == page_obj.number|add:'2' %}
+                <span>...</span>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+            <!-- <a href="?page={{ page_obj.next_page_number }}">next</a> -->
+            <a href="?page={{ page_obj.paginator.num_pages }}">{{page_obj.paginator.num_pages}} &raquo;</a>
+        {% endif %}
+        </div>
+    </div>
+{% for product in products %}
+    <div class="pc_container_products_wrapper_item" data-href="/pc/product/{{product.id}}/{{product.name}}">
+        <div class="pc_container_products_wrapper_item_card">
+            <div class="pc_container_products_wrapper_item_card_img">
+                <div class="pc_container_products_wrapper_item_card_img_container">
+                    <img src="{{product.img}}" alt="{{product.name}}">
+                </div>
+            </div>
+                <div class="pc_container_products_wrapper_item_card_info">
+                    <div class="pc_container_products_wrapper_item_card_info_top">
+                        <h3 alt="{{product.name}}">{{ product.bname }}</h3>
+                        <p alt="{{product.details_text}}">{{ product.bdetails_text }}</h3>
+                        </div>
+                    <div class="pc_container_products_wrapper_item_card_info_bottom">
+                        <p>{{ product.offers }}</h3>
+                        <h3>from <span>{{product.currency_symbol}}{{ product.price }}</span></h3>
+                    </div>
+                </div>
+        </div>
+
+    </div>
+{% endfor %}
+</div>

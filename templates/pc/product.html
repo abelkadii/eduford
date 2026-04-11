@@ -1,0 +1,39 @@
+<div class="product-container">
+    <div class="product-container-info">
+        <div class="product-container-info-image">
+            <div class="product-container-info-image-container">
+                <img src="{{product.img}}" alt="{{product.name}}">
+            </div>
+        </div>
+        <div class="product-container-info-container">
+            <div class="product-container-info-container-title"><h3>{{ product.name }}</h3></div>
+            <div class="product-container-info-container-desc"><p>{{ product.details }}</p></div>
+            <div class="product-container-info-container-offer"><h3>Offers:
+                <p>new  
+                    from <i>{{product.min_price}}</i><span class="material-symbols-outlined">keyboard_arrow_right</span></p></h3></div>
+        </div>
+    </div>
+    <div class="product-container-offers">
+        <table class="product-container-offers-table">
+            <!-- <tbody> -->
+            <tr class="table_header">
+                <th>Offer Title</th>
+                <th>Price & Delivery</th>
+                <th>Delivery Time</th>
+                <th>Shop</th>
+                <th>Visit</th>
+            </tr>
+                {% for store in product.stores %}
+                    <tr>
+                        <td class="product_td_offer_name">{{ store.nameOnStore }}</td>
+                        <td class="product_td_price">{{ store.currency }}{{ store.price }}
+                             <span>{{ store.delivery_details }}</span></td>
+                        <td class="product_td_delivery_time">{{ store.delivery_time }}</td>
+                        <td class="product_td_delivery_shop"><img src="{{ store.store_img }}" alt="store.store"></td>
+                        <td class="product_td_delivery_relocate"><a href="{{ store.relocate }}">Go To Store</a></td>
+                    </tr>
+                {% endfor %}
+            <!-- </tbody> -->
+        </table>
+    </div>
+</div>

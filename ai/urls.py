@@ -1,0 +1,18 @@
+from django.urls import path
+from . import views
+
+from django.conf import settings
+from django.conf.urls.static import static
+
+urlpatterns = []
+
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+app_name = "ai"
+urlpatterns = [
+    path('chat/', views.chat, name="chat"),
+    path('conversation/', views.conversation, name="conversation"),
+    path('chat/<s>', views.chat, name="chat"),
+]
+     

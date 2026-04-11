@@ -1,0 +1,116 @@
+{% load static %}
+<nav>
+    <a href="{% url 'core:index' %}" class="home-logo">
+        {% include 'core/cap.html' %}
+        <h4>Eduford</h4>
+    </a>
+    <div class="nav-links" id="navLinks">
+        <!-- <i class="fa fa-times" onclick="hideMenu()"></i> -->
+        <ul>
+            {% if location == "home" %}
+            <li class="--active">
+            {% else %}
+            <li class="">
+            {% endif %}
+                <a href="{% url 'core:index' %}">Home</a>
+            </li>
+            {% if location == "about" %}
+            <li class="--active">
+            {% else %}
+            <li class="">
+            {% endif %}
+                <a href="{% url 'core:about' %}">About</a>
+            </li>
+            {% if location == "blog" %}
+            <li class="--active">
+            {% else %}
+            <li class="">
+            {% endif %}
+                <a href="{% url 'core:blog' %}">Blog</a>
+            </li>
+            <!-- {% if location == "shop" %}
+            <li class="--active">
+            {% else %}
+            <li class="">
+            {% endif %}
+                
+            </li> -->
+            {% if location == "contact" %}
+            <li class="--active">
+            {% else %}
+            <li class="">
+            {% endif %}
+                <a href="{% url 'core:contact' %}">Contact</a>
+            </li>
+            {% if location == "study" %}
+            <li class="--active">
+            {% else %}
+            <li class="">
+            {% endif %}
+                <a href="{% url 'study:index' %}">Study</a>
+            </li>
+            <!-- {% if location == "chat" %}
+            <li class="--active">
+            {% else %} -->
+            <!-- {% endif %} -->
+            <div class="dropdown-navbar">
+                <button class="dropbtn">AI Tools
+                  <i class="fa fa-caret-down" style="display: unset;color: #f44336;margin-left: 2px;"></i>
+                </button>
+                <div class="dropdown-navbar-content">
+                    <a href="{% url 'ai:chat' %}">Math AI wiz</a>
+                    <a href="{% url 'predictor:home' %}">Predict</a>
+                </div>
+            </div> 
+            <div class="dropdown-navbar">
+                <button class="dropbtn">Shop
+                  <i class="fa fa-caret-down" style="display: unset;color: #f44336;margin-left: 2px;"></i>
+                </button>
+                <div class="dropdown-navbar-content">
+                    <a href="{% url 'shop:index' %}">Store</a>
+                    <a href="{% url 'pc:products' %}">Price Comparison</a>
+                </div>
+            </div> 
+
+            <!-- {% if location == "predictor" %} -->
+            <!-- <li class="--active"> -->
+            <!-- {% else %} -->
+            <!-- {% endif %} -->
+            <!-- {% if location == "pc" %}
+            <li class="--active">
+            {% else %}
+            <li class="">
+            {% endif %}
+            </li> -->
+        </ul>
+        <ul class="nav-auth" id="navAuth">
+            {% if request.user.is_authenticated and request.user.email_verified %}
+            <li class="navbar_welcoming-open"><h3>Welcome <span>{{ abbreviatedname }}</span></h3></li>
+            <li><a href="{% url 'authentication:signout' %}">Log out</a></li>
+            {% else %}
+            <li><a href="{% url 'authentication:signin' %}">Login</a></li>
+            <li><a href="{% url 'authentication:signup' %}">Join Us</a></li>
+            {% endif %}
+            
+        </ul> 
+    </div>   
+    <li class="navbar_welcoming-close"><h3>
+        {% if request.user.is_authenticated and request.user.email_verified %}
+        Welcome 
+        <span>{{ abbreviatedname }}</span>
+        {% endif %}
+        </h3>
+    </li>
+        <i class="fa fa-bars 
+        {% if not request.user.is_authenticated or not request.user.email_verified %}
+        to-left
+        {% endif %}
+        " onclick="toggleMenu()"></i>
+    <script>
+        var navLinks = document.getElementById("navLinks");
+        function toggleMenu(){
+            navLinks.style.display = navLinks.style.display =="flex"?"none":"flex";
+        }
+        window.addEventListener('resize', e=>{window.innerWidth>=1000 ? document.getElementById("navLinks").style.display = "flex":null})
+       </script>
+</nav>

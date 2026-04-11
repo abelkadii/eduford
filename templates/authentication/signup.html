@@ -1,0 +1,124 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Create a new account</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <link rel="stylesheet" href="{% static 'authentication/css/signup.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
+
+</head>
+<body>
+    <div class="navbar-position-absolute">
+        {% include 'shop/nav.html' %}
+    </div>
+    <style>
+        @media screen and (max-width: 900px) {
+            .container{
+                flex-direction: column-reverse;
+            }
+            .side-auth{
+                width: 100%;
+                height: 100px;
+            }
+            .signup{
+                width: 100%;
+            }
+            .signup-fields-input{
+                margin-bottom: 0;
+            }
+        }
+    </style>
+    {% for message in messages %}
+    <script>
+         window.addEventListener('load', function(){
+            alert("{{ message }}")
+        })
+    </script>
+    {% endfor %}
+    <div class="signup-container">
+        <div class="container">
+        <form class="signup" action="/signup" method="post">
+        
+            <h3 class="signup-header-title">
+                Create an Account
+            </h3>
+            <h2 class="signup-header-sub-title">
+                already have an account? 
+            <a href="/signin" class="signup-password-restore">sign in</a>
+            </h2>
+            {% csrf_token %}
+            <div class="signup-line">
+              <div class="signup-field">
+                    <h3 class="signup-field-label">Username</h3>
+                    <input class="signup-fields-input" type="text" id="username" name="username" placeholder="Enter your username (use only letters and numbers)" Required>
+                </div>
+            </div>
+            <div class="signup-line">
+                <div class="signup-field half">
+                    <h3 class="signup-field-label">First Name</h3>
+                    <input class="signup-fields-input" type="text" id="fname" name="fname" placeholder="Enter your first name" Required>
+                </div>
+                <div class="signup-field half">
+                    <h3 class="signup-field-label">Last Name</h3>
+                    <input class="signup-fields-input" type="text" id="lname" name="lname" placeholder="Enter Your last name" Required>
+                </div>
+            </div>
+            <div class="signup-line">
+                <div class="signup-field">
+                      <h3 class="signup-field-label">Email</h3>
+                      <input class="signup-fields-input" type="email" id="email" name="email" placeholder="Enter your email" Required>
+                </div>
+            </div>
+            <div class="signup-line">
+                <div class="signup-field half">
+                      <h3 class="signup-field-label">Password</h3>
+                      <input class="signup-fields-input" type="password" id="pass1" name="pass1" placeholder="Enter your password" Required>
+                </div>
+                <div class="signup-field half">
+                      <h3 class="signup-field-label">Confirm password</h3>
+                      <input class="signup-fields-input" type="password" id="pass2" name="pass2" placeholder="Confirm your password" Required>
+                </div>
+            </div>
+
+            <button id="submit-button" class="signup-button signup-button-active" type="submit">Sign Up</button>
+        </form>
+        <div class="side-auth">
+            <a href="{% url 'core:index' %}" class="home-logo home-logo-white">
+                {% include 'core/cap.html' %}
+                <h4>Eduford</h4>
+            </a>
+            <p>Eduford Making Student Life Easier</p>
+        </div>
+    </div>
+        </div>
+    
+    <script>
+        function handlechange(e){s
+            if(e.target.value.length < 0){
+                let submitButton = document.getElementById('submit-button');
+                if(submitButton.disabled == false){
+                    submitButton.classList.remove("signup-button-active")
+                }
+                submitButton.disabled = true;
+            }else{
+                let submitButton = document.getElementById('submit-button');
+                submitButton.disabled = false;
+                if(!("signup-button-active" in submitButton.classList)){
+                    submitButton.classList.add("signup-button-active")
+                }
+            }
+
+        }
+        let pass1 = document.getElementById('pass2');   
+        pass1.addEventListener('input', handlechange);
+    </script>
+</body>
+</html>

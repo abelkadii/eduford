@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'shop/css/style.css' %}"> 
+    <link rel="stylesheet" href="{% static 'core/css/style.css' %}"> 
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body class="">
+    {% for message in messages %}
+    <script>
+         window.addEventListener('load', function(){
+            alert("{{ message }}")
+        })
+    </script>
+    {% endfor %}
+    <div class="navbar-position-absolute">{% include 'core/nav.html' %}</div>
+    <div class="container">
+        <header>
+            <div class="title">PRODUCT LIST</div>
+            <div class="icon-cart">
+                <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 20">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 15a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm0 0h8m-8 0-1-4m9 4a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-9-4h10l2-7H3m2 7L3 4m0 0-.792-3H1"/>
+                </svg>
+                <span>0</span>
+            </div>
+            <h4 class="checkout_button" id="checkout_button">pay</h4>
+            <div class="dropdown">
+                <button class="dropbtn"><span>USD</span> <i class="fa fa-solid fa-caret-down"></i></button>
+                <div class="dropdown-content" id="myDropdown">
+                  <a data-currency="USD">US Dollar</a>
+                  <a data-currency="KES">Kenyan Shilling</a>
+                </div>
+              </div>
+        </header>
+        <div class="listProduct">
+
+        </div>
+    </div>
+    <div class="cartTab">
+        <h1>Shopping Cart</h1>
+        <div class="listCart">
+            
+        </div>
+        <form class="btn">
+            {% csrf_token %}
+            <h4 id="totalPrice">Total: 0</h4>
+            <div class="close"><span>Close</span></div>
+            <button class="checkOut" id="checkout">Check Out</button>
+        </form>
+    </div>
+
+    <script src="{% static 'shop/js/app.js' %}"></script> 
+</body>
+</html>

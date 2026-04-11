@@ -1,0 +1,108 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Verify Your Email</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'authentication/css/enter_otp.css' %}">
+</head>
+<body>
+    {% for message in messages %}
+    <script>
+         window.addEventListener('load', function(){
+            alert("{{ message }}")
+        })
+    </script>
+    {% endfor %}
+    <div class="enterotp-container">
+        <!-- {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            <strong>Message:</strong> {{ message }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        {% endfor %} -->
+        <div class="enterotp">
+            <h3 class="enterotp-header-title">
+                    Verify Email
+            </h3>
+            <h2 class="enterotp-header-sub-title">
+                didn't get OTP? 
+            <button  class="enterotp-password-restore" id="resend"  onclick="resend()">resend</button>
+            </h2>
+            <form class="" action="/verify" method="post">
+                {% csrf_token %}
+                <div class="enterotp-field">
+                    <h3 class="enterotp-field-label">
+                        OTP
+                    </h3>
+                    <input class="enterotp-fields-input" type="text" id="otp" name="otp" placeholder="Enter your OTP" Required>
+                </div>
+                <h2 class="enterotp-header-sub-title">
+                    want to use different account
+                <a  class="enterotp-password-restore"  href="{% url 'authentication:signout' %}">log out</a>
+                </h2>
+                <button id="submit-button" class="enterotp-button enterotp-button-active" type="submit">Verify</button>
+            </form>
+        </div>
+        </div>
+    
+    <script>
+        function handlechange(e){s
+            if(e.target.value.length == 6){
+                let submitButton = document.getElementById('submit-button');
+                if(submitButton.disabled == false){
+                    submitButton.classList.remove("enterotp-button-active")
+                }
+                submitButton.disabled = true;
+            }else{
+                let submitButton = document.getElementById('submit-button');
+                submitButton.disabled = false;
+                if(!("enterotp-button-active" in submitButton.classList)){
+                    submitButton.classList.add("enterotp-button-active")
+                }
+            }
+
+        }
+        let pass1 = document.getElementById('otp');   
+        pass1.addEventListener('input', handlechange);
+        function resend(){
+            let resend_button = document.getElementById("resend")
+            resend_button.innerHTML = "resending..."
+            resend_button.disabled=true
+            fetch('/send_otp', {
+                method: 'GET',
+                credentials: 'same-origin'  // Include current session
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(`OTP sent to ${data.email} , check your email`);  // Output the response data
+                resend_button.innerHTML = "resend"
+                resend_button.disabled=false
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</body>
+</html>
+
+
+<!-- <label for="username">Username</label>
+<input type="text" class="form-control" id="username" name="username" placeholder="Create A Username (use only letters and numbers)" Required>
+<label for="fname">First Name</label>
+<input type="text" class="form-control" id="fname" name="fname" placeholder="Enter Your First Name" Required>
+<label for="lname">Last Name</label>
+<input type="text" class="form-control" id="lname" name="lname" placeholder="Enter Your Last Name" Required>
+<label for="email">Email</label>
+<input type="email" class="form-control" id="email" name="email" placeholder="Enter Your Email Address" Required>
+<label for="pass1">Password</label>
+<input type="password" class="form-control" id="pass1" name="pass1" placeholder="Create Your Password" Required>
+<label for="pass2">Confirm Password</label>
+<input type="password" class="form-control" id="pass2" name="pass2" placeholder="Confirm Your Password" Required> -->

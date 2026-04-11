@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'study/css/index.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
+    <!-- <link rel="stylesheet" href="{% static 'study/css/reset.css' %}"> -->
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="{% static 'study/js/index.js' %}"></script>
+  <title>Find Study Buddy</title>
+</head>
+  <body>
+    <div class="navbar-position-absolute">
+      {% include 'core/nav.html' %}
+  </div>
+  <div class="study-container">
+    <div class="study-container-wrapper">
+        <div class="study-container-wrapper-top">
+            <div class="study-container-wrapper-top-search">
+                <h2 class="study-logo">Find <span>Study</span> Buddy</h2>
+                <form action="/study/search" method="POST" class="study-container-wrapper-top-search-address" id="form">
+                    {% csrf_token %}
+                    <input type="text" id="address" placeholder="enter your address">
+                </form>
+                <div class="study-container-wrapper-top-search-distance">
+                    <input type="text" id="distance" placeholder="distance in km ">
+                </div>
+                <button class="search_button" id="search_button">Submit</button>
+            </div>
+        </div>
+        <div class="study-container-wrapper-body">
+            <div class="study-container-wrapper-body-container">
+                <div class="study-container-wrapper-body-container-map" id="map"></div>
+            </div>
+        </div>
+    </div>
+  </div>
+  <script async defer src="/study/load_map"></script>
+</body>
+</html>

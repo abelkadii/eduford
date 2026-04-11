@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        {% load static %}
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>AI-POWERED STUDENT TOOLKIT</title>
+       <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+       <link rel="preconnect" href="https://fonts.googleapis.com">
+       <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+       <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;600;700&display=swap" rel="stylesheet">
+       <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+     </head>
+     <body>
+        {% for message in messages %}
+    <script>
+         window.addEventListener('load', function(){
+            alert("{{ message }}")
+        })
+    </script>
+    {% endfor %}
+        {% if user.is_authenticated and user.email_verified %}
+        {% include 'core/book.html' %}
+        {% endif %}
+
+        <section class="header">
+            {% include 'core/nav.html' %}
+             <!---------Javascript for toggle menu------->
+
+        <div class="text-box">
+            <h1 class="slide-left">AI-POWERED STUDENT TOOLKIT</h1>
+            <p class="slide-left">"Campus Genie: Your AI-powered Student Success Partner." By harnessing the synergy and power of togetherness, <br>we make 
+                financial freedom in campus and beyond, a reality.</p>
+            <div class="links slide-left">
+                <a href="" class="hero-btn">Visit Us To Know More</a>
+                <a onclick="openForm()" class="hero-btn"
+                {% if not user.is_authenticated or not user.email_verified %}
+                href="{% url 'authentication:signin' %}"
+                {% endif %}
+                >
+                {% if user.is_authenticated and user.email_verified %}
+                Book appointement
+                    {% else %}
+                    Login to book appointement
+                    {% endif %}
+                </a>
+            </div> 
+        </div> 
+                
+        </section>
+        <!--course-->
+        <section class="course">
+            <h1>Courses We Offer</h1>
+            <p>lorem ipsum sit amet, consectetur adipiscing elit.</p>
+            <div class="row">
+                <div class="course-col"> <!---col means column i think for all the courses-->
+                    <h3>Intermediate</h3>
+                    <p>lerem ipsum thjw  jeien d ejjr  urujnfb hrhnd jrjjfn hjjr
+                        rienfnki itjnfbs ijenfjk</p>
+                </div>
+            <div class="course-col">
+                <h3>Degree</h3>
+                <p>lerem ipsum thjw  jeien d ejjr  urujnfb hrhnd jrjjfn hjjr
+                    rienfnki itjnfbs ijenfjk</p>
+            </div>
+            <div class="course-col">
+                <h3>Post-graduation</h3>
+                <p>lerem ipsum thjw  jeien d ejjr  urujnfb hrhnd jrjjfn hjjr
+                    rienfnki itjnfbs ijenfjk</p>
+            </div>
+        </div>
+        </section>
+<!---campus-->
+<section class="campus">
+    <h1>Our Global Campuses</h1>
+    <p>lorem ipsum sit amet, consectetur adipiscing elit.</p>
+
+    <div class="row">
+        <div class="campus-col"> 
+            <img src="{% static 'core/image/london.png' %}">
+            <div class="layer">
+                <h3>KENYA</h3>
+            </div>
+        </div>
+        <div class="campus-col"> 
+            <img src="{% static 'core/image/newyork.png' %}">
+            <div class="layer">
+                <h3>RWANDA</h3>
+            </div>
+        </div>
+        <div class="campus-col"> 
+            <img src="{% static 'core/image/washington.png' %}">
+            <div class="layer">
+                <h3>TANZANIA</h3>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="facilities">
+    <h1>Our facilities</h1>
+    <p>lorem ipsum sit amet, consectetur adipiscing elit.</p>
+    <div class="row">
+        <div class="facilities-col"> 
+            <img src="{% static 'core/image/library.png' %}">
+            <h3>World Class library</h3>
+            <p>lorem ipsum sit amet, consectetur adipiscing elit.</p>
+        </div>
+        <div class="facilities-col"> 
+            <img src="{% static 'core/image/basketball.png' %}">
+            <h3>Largest Playground</h3>
+            <p>lorem ipsum sit amet, consectetur adipiscing elit.</p>
+        </div>
+        <div class="facilities-col">
+            <img src="{% static 'core/image/cafeteria.png' %}">
+            <h3>Tasty and Healthy Food</h3>
+            <p>lorem ipsum sit amet, consectetur adipiscing elit.</p>
+        </div>
+    </div>
+
+</section>
+<!--testimonials-->
+
+<section class="testimonials">
+    <h1>What Our Members Say</h1>
+    <p>lorem ipsum sit amet, consectetur adipiscing elit.</p>
+    <div class="row">
+        <div class="testimonials-col"> 
+            <img src="{% static 'core/image/user1.jpg' %}">
+        <div>
+            <p>lorem ipsum sit amet, consectetur adipiscing elit.
+                tyuigb rrtt  ttt e errsfgfdgfd wtgrertredfdffg wtgrertredfdffg
+                wrfdsd </p>
+                <h3>Lavender N. Green</h3>
+                <i class="fa fa-star"></i>
+                <i class="fa fa-star"></i>
+                <i class="fa fa-star"></i>
+                <i class="fa fa-star"></i>
+                <i class="fa fa-star-o"></i>
+        </div>
+        </div>
+        <div class="testimonials-col"> 
+            <img src="{% static 'core/image/user2.jpg' %}">
+        <div>
+            <p>lorem ipsum sit amet, consectetur adipiscing elit.
+                tyuigb rrtt  ttt e errsfgfdgfd wtgrertredfdffg wtgrertredfdffg
+                wrfdsd </p>
+                <h3>Nathan Greg</h3>
+                <i class="fa fa-star"></i>
+                <i class="fa fa-star"></i>
+                <i class="fa fa-star"></i>
+                <i class="fa fa-star"></i>
+                <i class="fa fa-star-half-o"></i>
+        </div>
+        </div>
+    </div>
+</section>
+
+<!----call To Action------>
+
+<section class="cta">
+    <h1>Enroll For Our Various Programs <br>Anywhere in Kenya.</h1>
+    <a href="{% url 'core:contact' %}" class="hero-btn">CONTACT US</a>
+  
+</section>
+
+<!---footer-->
+<section class="footer">
+    <h4>About Us</h4>
+    <p>lorem ipsum sit amet, consectetur adipiscing elit.
+        tyyhefg eguebheh fudbtfyef <br>yebfuwefbuhbeyh uhbefeufbuie
+        ehbuefbeihfei uibeiubve8fi iubeuiebfui uibeiufvbeiufb
+        efbefibei9 eubbeifb
+    </p>
+
+    <div class="icons">
+                <i class="fa fa-facebook"></i>
+                <i class="fa fa-twitter"></i>
+                <i class="fa fa-instagram"></i>
+                <i class="fa fa-linkedin"></i>
+    </div>
+    <p>Made with<i class="fa fa-heart-o"></i>by Nathan Owino</p>
+    
+</section>
+
+
+
+    </body>
+</html>
