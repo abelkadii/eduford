@@ -96,9 +96,9 @@
             body: data
         }).then(response => response.json())
         .then(data => {     
+        let submit_button = document.getElementById('form_button');
         if(data['status'] == 'success'){
             window.location.href = data.redirect
-            let submit_button = document.getElementById('form_button');
             submit_button.innerHTML = 'Booked';
             setTimeout(() => {
                 submit_button.innerHTML = 'Book';
@@ -108,9 +108,15 @@
                 alert('Appointment booked successfully');
             }, 1000);
         }else{
-            alert('Appointment booking failed');
-            closeForm();
+            submit_button.innerHTML = 'Book';
+            submit_button.disabled = false;
+            alert(data.message || 'Appointment booking failed');
         }
+        }).catch(() => {
+            let submit_button = document.getElementById('form_button');
+            submit_button.innerHTML = 'Book';
+            submit_button.disabled = false;
+            alert('Appointment booking failed');
         });
     }
     

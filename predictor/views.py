@@ -1,4 +1,5 @@
 import joblib
+import logging
 import pandas as pd
 from sklearn.neighbors import NearestNeighbors
 import json
@@ -12,7 +13,7 @@ from .models import Diagnosis
 import random
 
 from eduford import settings
-from payment.checkout import create_checkout_page
+from payment.checkout import create_checkout_page, CheckoutConfigurationException
 from checkout_sdk.exception import CheckoutApiException, CheckoutArgumentException, CheckoutAuthorizationException
 
 global response
@@ -33,6 +34,8 @@ doctype=pd.read_csv(BASE_DIR/"predictor/models/Doctor_Versus_Disease.csv",encodi
 
 response=dict()
 response1=dict()
+
+logger = logging.getLogger(__name__)
 
 def must_be_authenticated_and_verified(f):
     def wrapper(request, *args, **kwargs):
@@ -141,17 +144,20 @@ def getReport(request, id):
     uuid = diagnose[0].uuid
     try:
         response = create_checkout_page(settings.CHECKOUT_SECRET_KEY, settings.CHECKOUT_PRCESSING_CHANNEL_ID, [{"name": "Diagnosis Report", "quantity": 1, "price": 2999}], "Eduford", settings.WEBSITE_URL+"/predictor/report/{}".format(uuid), settings.WEBSITE_URL+"/?status=failure", settings.WEBSITE_URL+"/?status=cancel", f"REPORT", "KES", geocoder.ip({'127.0.0.1': 'me'}.get((ip:=request.META.get('REMOTE_ADDR')), ip)).geojson['features'][0]['properties']['country'], "en-US")
+    except CheckoutConfigurationException as err:
+        logger.error("Checkout is misconfigured for predictor reports: %s", err)
+        return JsonResponse({"success": False, "message": str(err)}, status=500)
     except CheckoutApiException as err:
-        print(err)
-        return HttpResponse(status=500)
+        logger.exception("Checkout API error while creating a predictor report checkout session.")
+        return JsonResponse({"success": False, "message": "Unable to create the checkout session right now."}, status=502)
         
     except CheckoutArgumentException as err:
-        print(err)
-        return HttpResponse(status=501)
+        logger.exception("Invalid checkout request while creating a predictor report checkout session.")
+        return JsonResponse({"success": False, "message": "Unable to create the checkout session right now."}, status=500)
 
     except CheckoutAuthorizationException as err:
-        print(err)
-        return HttpResponse(status=502)
+        logger.exception("Checkout authorization failed while creating a predictor report checkout session.")
+        return JsonResponse({"success": False, "message": "Checkout credentials were rejected by the payment provider."}, status=502)
     return JsonResponse({"success": True, "redirect": response._links.redirect.href})
     
 

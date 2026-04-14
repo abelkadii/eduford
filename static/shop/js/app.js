@@ -144,7 +144,10 @@ listCartHTML.addEventListener('click', (event) => {
 function handleCheckOut(e){
     e.preventDefault()
     checkout.innerHTML = "checking ...";
-    if(cart.length==0)return
+    if(cart.length==0){
+        checkout.innerHTML = "Check Out";
+        return
+    }
     csrftoken = getCookie('csrftoken')
     fetch('/shop/buy', {
         method: "POST",
@@ -154,17 +157,22 @@ function handleCheckOut(e){
             currency: currency
         })
     })
-    .then(
-        response=>response.json()
-    )
+    .then(async response => {
+        const json = await response.json().catch(() => ({
+            success: false,
+            message: 'Unable to create the checkout session.'
+        }));
+        if(!response.ok || json.success !== true){
+            throw new Error(json.message || 'Unable to create the checkout session.');
+        }
+        return json;
+    })
     .then(json=>{
         checkout.innerHTML = "Check Out"
-        if(json.success==true){
-            window.location.href = json.redirect
-        }
+        window.location.href = json.redirect
     }).catch(err=>{
         checkout.innerHTML = "Check Out"
-        alert("error", err)
+        alert(err.message || "Unable to create the checkout session.")
     })
 }
 

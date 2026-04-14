@@ -1,12 +1,16 @@
+import logging
+
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 from .models import Appointment
-from payment.checkout import create_checkout_page
+from payment.checkout import create_checkout_page, CheckoutConfigurationException
 from checkout_sdk.exception import CheckoutApiException, CheckoutArgumentException, CheckoutAuthorizationException
 from eduford import settings
 from django.contrib import messages
 import geocoder
 # Create your views here.
+
+logger = logging.getLogger(__name__)
 
 def index(request):
     context = {"location": "home"}
@@ -69,9 +73,9 @@ def course(request):
 def book(request):
     if request.user.is_authenticated:
         if not request.user.email_verified:
-            return HttpResponse('verify your account', status=400)
+            return JsonResponse({'status': 'error', 'message': 'Verify your account first.'}, status=400)
     else:
-        return HttpResponse('login to your account or create a new account', status=400)
+        return JsonResponse({'status': 'error', 'message': 'Log in to your account or create a new one.'}, status=400)
 
     if request.method == "POST":
         fname = request.POST['fname']
@@ -83,22 +87,24 @@ def book(request):
         appointment = Appointment(user=request.user, first_name=fname, last_name=lname, email=email, phone=phone, date=date, time=time)
         try:
             response = create_checkout_page(settings.CHECKOUT_SECRET_KEY, settings.CHECKOUT_PRCESSING_CHANNEL_ID, [{"name": "Booking an appointment", "quantity": 1, "price": 1999}], "Eduford", settings.WEBSITE_URL+"/?status=success", settings.WEBSITE_URL+"/?status=failure", settings.WEBSITE_URL+"/?status=cancel", f"APP", "KES", geocoder.ip({'127.0.0.1': 'me'}.get((ip:=request.META.get('REMOTE_ADDR')), ip)).geojson['features'][0]['properties']['country'], "en-US")
+        except CheckoutConfigurationException as err:
+            logger.error("Checkout is misconfigured for appointment bookings: %s", err)
+            return JsonResponse({'status': 'error', 'message': str(err)}, status=500)
         except CheckoutApiException as err:
-            print(err)
-            return HttpResponse(status=500)
-            
+            logger.exception("Checkout API error while creating an appointment checkout session.")
+            return JsonResponse({'status': 'error', 'message': 'Unable to create the checkout session right now.'}, status=502)
+             
         except CheckoutArgumentException as err:
-            print(err)
-            return HttpResponse(status=501)
+            logger.exception("Invalid checkout request while creating an appointment checkout session.")
+            return JsonResponse({'status': 'error', 'message': 'Unable to create the checkout session right now.'}, status=500)
 
         except CheckoutAuthorizationException as err:
-            print(err)
-            return HttpResponse(status=502)
+            logger.exception("Checkout authorization failed while creating an appointment checkout session.")
+            return JsonResponse({'status': 'error', 'message': 'Checkout credentials were rejected by the payment provider.'}, status=502)
         appointment.payement_id = response.id
         appointment.payement_reference = response.reference
         appointment.status = 'payment_created'
         appointment.save()
-        print({"status": "success", "redirect": response._links.redirect.href})
         return JsonResponse({"status": "success", "redirect": response._links.redirect.href})
-    return HttpResponse("404 - Not Found")
+    return JsonResponse({'status': 'error', 'message': 'POST method required.'}, status=405)
     

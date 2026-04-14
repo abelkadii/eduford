@@ -1,5 +1,7 @@
 # For more information please refer to https://github.com/checkout/checkout-sdk-python
 # For more information please refer to https://github.com/checkout/checkout-sdk-python
+import re
+
 import checkout_sdk
 from checkout_sdk.checkout_sdk import CheckoutSdk
 from checkout_sdk.common.common import Phone, Address, CustomerRequest, Product
@@ -9,11 +11,36 @@ from checkout_sdk.payments.payments_previous import BillingInformation
 from checkout_sdk.payments.payments import ThreeDsRequest, ProcessingSettings, RiskRequest, ShippingDetails, PaymentRecipient
 from checkout_sdk.environment import Environment
 from checkout_sdk.exception import CheckoutApiException, CheckoutArgumentException, CheckoutAuthorizationException
+_SECRET_KEY_PATTERN = re.compile(r"^sk_(sbox_)?[a-z2-7]{26}[a-z2-7*#$=]$")
+_PROCESSING_CHANNEL_ID_PATTERN = re.compile(r"^pc_[a-z0-9]{26}$")
 
 
+class CheckoutConfigurationException(ValueError):
+    pass
 
+
+def validate_checkout_configuration(secret_key, processing_channel_id):
+    errors = []
+
+    if not secret_key:
+        errors.append("CHECKOUT_SECRET_KEY is missing.")
+    elif not _SECRET_KEY_PATTERN.match(secret_key):
+        errors.append(
+            "CHECKOUT_SECRET_KEY is invalid. Sandbox keys should start with "
+            "'sk_sbox_' and be 35 characters long."
+        )
+
+    if not processing_channel_id:
+        errors.append("CHECKOUT_PROCESSING_CHANNEL_ID is missing.")
+    elif not _PROCESSING_CHANNEL_ID_PATTERN.match(processing_channel_id):
+        errors.append("CHECKOUT_PROCESSING_CHANNEL_ID is invalid.")
+
+    if errors:
+        raise CheckoutConfigurationException(" ".join(errors))
 
 def create_checkout_page(SECRET_KEY, PROCESSING_CHANNEL_ID, products, description, success_url, failure_url, cancel_url, reference="reference", currency="USD", country="US", locale="en-US"):
+    validate_checkout_configuration(SECRET_KEY, PROCESSING_CHANNEL_ID)
+
     api = CheckoutSdk.builder() \
     .secret_key(SECRET_KEY) \
     .environment(Environment.sandbox()) \
@@ -85,7 +112,6 @@ def create_checkout_page(SECRET_KEY, PROCESSING_CHANNEL_ID, products, descriptio
     request.locale = locale
     request.processing_channel_id = PROCESSING_CHANNEL_ID
     # request.allow_payment_methods = [PaymentSourceType.CARD, PaymentSourceType.KLARNA]
-    print(request, request.processing_channel_id, request.products)
     response = api.hosted_payments.create_hosted_payments_page_session(request)
     return response
     # except CheckoutApiException as err:

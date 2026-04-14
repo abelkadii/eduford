@@ -9,7 +9,7 @@ from .config import *
 
 # Create your views here.
 # vertexai.init(api)
-genai.configure(api_key=os.getenv("GOOGLE_MAPS_API_KEY"))
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 def chat(request, s=None):
     if request.user.is_authenticated:
@@ -55,11 +55,14 @@ def conversation(request):
         conversation_history.append(chi)
     prompt = json_data['meta']['content']['parts'][0]
     try:
-        model = genai.GenerativeModel('gemini-pro')
+    # if True:
+        # model = genai.GenerativeModel('gemini-pro')
+        model = genai.GenerativeModel("gemini-2.5-flash")
         instruction = "Start your response by a asking the user about there name before extending a warm greeting and addressing their inquiries. When discussing mathematical topics, ensure that you not only provide explanations but also include numerical calculations and worked-out examples to enhance clarity and understanding."
         chat = model.start_chat(history=[{'role': 'user', 'parts': {instruction}}, {'role': 'model', 'parts': {"Okay I will do that"}}]+conversation_history)
         gpt_resp = chat.send_message(prompt.get("content"), stream=True)
     except:
+    # else:
         gpt_resp=None
     def stream():
         if not gpt_resp:

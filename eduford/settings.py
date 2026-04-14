@@ -11,10 +11,14 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 import os
 from pathlib import Path
+
+from dotenv import load_dotenv
+
 from . info import *
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / ".env")
 
 
 # Quick-start development settings - unsuitable for production
@@ -30,7 +34,11 @@ WEBSITE_URL = "http://localhost:8000"
 CHECKOUT_SECRET_KEY = os.getenv("CHECKOUT_SECRET_KEY")
 CHECKOUT_PUBLIC_KEY = os.getenv("CHECKOUT_PUBLIC_KEY")
 GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
-CHECKOUT_PRCESSING_CHANNEL_ID = os.getenv("CHECKOUT_PRCESSING_CHANNEL_ID")
+CHECKOUT_PROCESSING_CHANNEL_ID = (
+    os.getenv("CHECKOUT_PROCESSING_CHANNEL_ID")
+    or os.getenv("CHECKOUT_PRCESSING_CHANNEL_ID")
+)
+CHECKOUT_PRCESSING_CHANNEL_ID = CHECKOUT_PROCESSING_CHANNEL_ID
 
 # SECURITY WARNING: keep the secret key used in production secret!
 
@@ -38,9 +46,14 @@ SECRET_KEY = 'django-insecure-c1gre0(o7)w3e__35q+l_7i168y6nz8ohq=e9%pdu$0wjgf@8j
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
-DEBUG = True
+DEBUG = os.getenv("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = []
+
+ALLOWED_HOSTS = [
+    ".onrender.com",
+    "127.0.0.1",
+    "localhost",
+]
 
 
 # Application definition
@@ -64,6 +77,8 @@ INSTALLED_APPS = [
 AUTH_USER_MODEL = 'authentication.CustomUser'
 
 MIDDLEWARE = [
+    "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.middleware.security.SecurityMiddleware',
     # 'django.contrib.sessions',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -107,6 +122,16 @@ DATABASES = {
 }
 
 
+# import dj_database_url
+# import os
+
+# DATABASES = {
+#     "default": dj_database_url.parse(
+#         os.environ["DATABASE_URL"],
+#         conn_max_age=600,
+#         ssl_require=True,
+#     )
+# }
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
@@ -141,7 +166,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/'
+
+STATIC_URL = "/static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

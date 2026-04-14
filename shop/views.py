@@ -1,16 +1,20 @@
+import logging
+import random
+import json
+
 from django.shortcuts import render, redirect
 from django.http import JsonResponse, HttpResponse
 from  .models import Product, Order
-from payment.checkout import create_checkout_page
+from payment.checkout import create_checkout_page, CheckoutConfigurationException
 from checkout_sdk.exception import CheckoutApiException, CheckoutArgumentException, CheckoutAuthorizationException
 from eduford import settings
-import random
-import json
 from django.contrib import messages
 
 import geocoder
 
 # Create your views here.
+
+logger = logging.getLogger(__name__)
 
 def random_string(n):
     return ''.join([random.choice("QWRTYUIOPASDFGHJKLZXCVBNM0123456789") for i in range(n)])
@@ -56,24 +60,36 @@ currencyMultipliers = {
 def buy(request):
     if request.user.is_authenticated:
         if not request.user.email_verified:
-            return HttpResponse('verify your account', status=400)
+            return JsonResponse({'success': False, 'message': 'Verify your account first.'}, status=400)
     else:
-        return HttpResponse('login to your account or create a new account', status=400)
+        return JsonResponse({'success': False, 'message': 'Log in to your account or create a new one.'}, status=400)
     if request.method != 'POST':
-        return HttpResponse(status=400)
+        return JsonResponse({'success': False, 'message': 'POST method required.'}, status=405)
     
-    # print(request.POST, request.body.products)
-    # return
-    _orders = json.loads(request.body)['products']
-    _currency = json.loads(request.body)['currency']
+    try:
+        payload = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'success': False, 'message': 'Invalid checkout payload.'}, status=400)
+
+    _orders = payload.get('products', [])
+    _currency = payload.get('currency', 'USD')
+    if not _orders:
+        return JsonResponse({'success': False, 'message': 'Your cart is empty.'}, status=400)
+
     orders = []
     for order in _orders:
         product = Product.objects.filter(id=order['product_id'])
         if not product:
-            return HttpResponse(status=404)
+            return JsonResponse({'success': False, 'message': 'Product not found.'}, status=404)
         order['product']=product[0]
         if order['quantity']>order['product'].stock:
-            return HttpResponse(f'order quantity is greater than {order["product"].name} stock')
+            return JsonResponse(
+                {
+                    'success': False,
+                    'message': f'Order quantity is greater than available {order["product"].name} stock.',
+                },
+                status=400,
+            )
         orders.append(order)
     payment = []
     reg_orders = []
@@ -87,17 +103,20 @@ def buy(request):
         reg_orders.append(order)
     try:
         response = create_checkout_page(settings.CHECKOUT_SECRET_KEY, settings.CHECKOUT_PRCESSING_CHANNEL_ID, payment, "Eduford", settings.WEBSITE_URL+"/shop?status=success", settings.WEBSITE_URL+"/shop?status=failure", settings.WEBSITE_URL+"/shop?status=cancel", f"ORD-"+random_string(3), _currency, geocoder.ip({'127.0.0.1': 'me'}.get((ip:=request.META.get('REMOTE_ADDR')), ip)).geojson['features'][0]['properties']['country'], "en-US")
+    except CheckoutConfigurationException as err:
+        logger.error("Checkout is misconfigured for shop purchases: %s", err)
+        return JsonResponse({'success': False, 'message': str(err)}, status=500)
     except CheckoutApiException as err:
-        print(err)
-        return HttpResponse(status=500)
-        
+        logger.exception("Checkout API error while creating a shop checkout session.")
+        return JsonResponse({'success': False, 'message': 'Unable to create the checkout session right now.'}, status=502)
+         
     except CheckoutArgumentException as err:
-        print(err)
-        return HttpResponse(status=501)
+        logger.exception("Invalid checkout request while creating a shop checkout session.")
+        return JsonResponse({'success': False, 'message': 'Unable to create the checkout session right now.'}, status=500)
 
     except CheckoutAuthorizationException as err:
-        print(err)
-        return HttpResponse(status=502)
+        logger.exception("Checkout authorization failed while creating a shop checkout session.")
+        return JsonResponse({'success': False, 'message': 'Checkout credentials were rejected by the payment provider.'}, status=502)
     for order in reg_orders:
         order.payement_id = response.id
         order.payement_reference = response.reference
