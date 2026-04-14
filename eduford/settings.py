@@ -50,7 +50,7 @@ DEBUG = os.getenv("DEBUG", "False") == "True"
 
 
 ALLOWED_HOSTS = [
-    ".onrender.com",
+    "eduford-q5ta.onrender.com",
     "127.0.0.1",
     "localhost",
 ]
