@@ -182,13 +182,20 @@ def signin(request):
         else:
             if as_json:
                 return JsonResponse({"status": "error", "message": "Bad Credentials!!"})
-            messages.error(request, "Bad Credentials!!")
-            if _redirecting:
-                return redirect('/signin?redirect=_redirecting')
-            return redirect('authentication:signin')
+            context = {
+                "redirecting": _redirecting,
+                "location": "signin",
+                "entered_username": username,
+                "login_error": "Username or password is wrong.",
+            }
+            return render(request, "authentication/login.html", context, status=401)
     elif request.method == 'GET':
         rd = request.GET.get('redirect', None)
-        context = {"_redirecting": rd=="_redirecting", 'location': 'signin'}
+        context = {
+            "redirecting": rd=="_redirecting",
+            "location": "signin",
+            "entered_username": "",
+        }
         return render(request, "authentication/login.html", context)
 
 

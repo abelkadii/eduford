@@ -36,16 +36,9 @@
             }
         }
     </style>
-    {% for message in messages %}
-    <script>
-         window.addEventListener('load', function(){
-            alert("{{ message }}")
-        })
-    </script>
-    {% endfor %}
     <div class="signup-container">
         <div class="container">
-        <form class="signup signin" action="/signin" method="post">
+        <form class="signup signin" action="/signin{% if redirecting %}?redirect=_redirecting{% endif %}" method="post">
         
             <h3 class="signup-header-title">
                 Sign in To Your Account
@@ -54,17 +47,27 @@
                 don't have an account? 
             <a href="/signup" class="signup-password-restore">sign up</a>
             </h2>
+            {% if messages %}
+            <div class="auth-message-list">
+                {% for message in messages %}
+                <p class="auth-message auth-message--{{ message.tags|default:'info' }}">{{ message }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
             {% csrf_token %}
             <div class="signup-line">
               <div class="signup-field">
                     <h3 class="signup-field-label">Username</h3>
-                    <input class="signup-fields-input" type="text" id="username" name="username" placeholder="Enter your username (use only letters and numbers)" Required>
+                    <input class="signup-fields-input{% if login_error %} signup-fields-input--error{% endif %}" type="text" id="username" name="username" value="{{ entered_username|default:'' }}" placeholder="Enter your username (use only letters and numbers)" aria-invalid="{% if login_error %}true{% else %}false{% endif %}" required>
                 </div>
             </div>
             <div class="signup-line">
                 <div class="signup-field">
                       <h3 class="signup-field-label">Password</h3>
-                      <input class="signup-fields-input" type="password" id="pass1" name="pass1" placeholder="Enter your password" Required>
+                      <input class="signup-fields-input{% if login_error %} signup-fields-input--error{% endif %}" type="password" id="pass1" name="pass1" placeholder="Enter your password" aria-invalid="{% if login_error %}true{% else %}false{% endif %}" required>
+                      {% if login_error %}
+                      <p class="signup-field-error">{{ login_error }}</p>
+                      {% endif %}
                 </div>
             </div>
             <button id="submit-button" class="signup-button signup-button-active" type="submit">Sign In</button>
@@ -78,26 +81,5 @@
         </div>
     </div>
         </div>
-    
-    <script>
-        function handlechange(e){s
-            if(e.target.value.length < 0){
-                let submitButton = document.getElementById('submit-button');
-                if(submitButton.disabled == false){
-                    submitButton.classList.remove("signup-button-active")
-                }
-                submitButton.disabled = true;
-            }else{
-                let submitButton = document.getElementById('submit-button');
-                submitButton.disabled = false;
-                if(!("signup-button-active" in submitButton.classList)){
-                    submitButton.classList.add("signup-button-active")
-                }
-            }
-
-        }
-        let pass1 = document.getElementById('pass2');   
-        pass1.addEventListener('input', handlechange);
-    </script>
 </body>
 </html>
