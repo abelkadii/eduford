@@ -1,5 +1,6 @@
 # 🎓 Eduford — Full-Stack Educational Platform
 > ⚡ Full-stack Django application integrating AI, geolocation, e-commerce, and real-world scraped datasets.
+
 🚀 **Live Demo:** https://eduford-q5ta.onrender.com  
 📦 **GitHub Repository:** https://github.com/abelkadii/eduford  
 
