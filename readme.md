@@ -147,8 +147,9 @@ venv\Scripts\activate
 pip install -r requirements.txt
 python manage.py migrate
 python manage.py runserver
+```
 
-📬 Contact
+## 📬 Contact
 
 LinkedIn: https://linkedin.com/in/abelkadii
 Portfolio: https://abelkadii.web.app
