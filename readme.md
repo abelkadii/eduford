@@ -101,16 +101,16 @@ This project reflects practical software engineering experience, including:
 ### 🏠 Homepage
 ![Homepage](./screenshots/HomePage.png)
 
-### 🏠 Signup
-![Signup](./screenshots/HomePage.png)
+### 🏠 Signup Page
+![Signup](./screenshots/SignUp.png)
 
 ### 🔎 Search & Book Discovery
 ![Search](./screenshots/BookComparison.png)
 
-### 🛒 E-Commerce Interface
+### 🛒 E-Commerce Shop
 ![Products](./screenshots/Ecommerce.png)
 
-### 🤖 AI Feature
+### 🤖 AI Chat Assistant 
 ![AI Feature](./screenshots/AI.png)
 
 ### 📄 PDF Report Generation
