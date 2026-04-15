@@ -99,19 +99,22 @@ This project reflects practical software engineering experience, including:
 ## 📸 Screenshots
 
 ### 🏠 Homepage
-![Homepage](./screenshots/homepage.png)
+![Homepage](./screenshots/HomePage.png)
+
+### 🏠 Signup
+![Signup](./screenshots/HomePage.png)
 
 ### 🔎 Search & Book Discovery
-![Search](./screenshots/search.png)
+![Search](./screenshots/BookComparison.png)
 
 ### 🛒 E-Commerce Interface
-![Products](./screenshots/products.png)
+![Products](./screenshots/Ecommerce.png)
 
 ### 🤖 AI Feature
-![AI Feature](./screenshots/ai-feature.png)
+![AI Feature](./screenshots/AI.png)
 
-### 📄 PDF Report
-![PDF Report](./screenshots/pdf-report.png)
+### 📄 PDF Report Generation
+![PDF Report Generation](./screenshots/Predict.png)
 
 ---
 
@@ -152,4 +155,5 @@ python manage.py runserver
 ## 📬 Contact
 
 LinkedIn: https://linkedin.com/in/abelkadii
+
 Portfolio: https://abelkadii.web.app
