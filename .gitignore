@@ -1,4 +1,4 @@
-.env
+quick-test.py
 # Python
 __pycache__/
 *.py[cod]
@@ -7,6 +7,5 @@ __pycache__/
 # Virtual environment
 venv/
 .env
-
 # Django
 db.sqlite3

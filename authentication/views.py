@@ -2,19 +2,24 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from .models import CustomUser as User
 from django.contrib import messages
-from django.core.mail import EmailMessage, send_mail
 from eduford import settings
 # from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.utils.encoding import force_bytes, force_str
 from django.contrib.auth import authenticate, login, logout
+from html import escape
+import logging
 import threading
+import requests
 from django.http import JsonResponse
 from . tokens import generate_token
 import random, json
 from django.views.decorators.csrf import csrf_exempt
+
 # Create your views here.
+
+logger = logging.getLogger(__name__)
 
 
 def threaded(f):
@@ -23,14 +28,74 @@ def threaded(f):
         t.start()
     return wrapper
 
+
+def mark_user_verified(user):
+    if not user.email_verified:
+        user.email_verified = True
+        user.save(update_fields=["email_verified"])
+
+
+def redirect_after_verified_login(_redirecting, as_json=False):
+    redirect_url = "https://store.breathcure.com/default.asp" if _redirecting else "/"
+    if as_json:
+        return JsonResponse({"status": "success", "message": "", "url": redirect_url})
+    if _redirecting:
+        return redirect(redirect_url)
+    return redirect("core:index")
+
+
+def send_email(to_email, subject, content):
+    if not settings.SENDGRID_API_KEY:
+        logger.error("SENDGRID_API_KEY is missing.")
+        return None
+
+    url = "https://api.sendgrid.com/v3/mail/send"
+    headers = {
+        "Authorization": f"Bearer {settings.SENDGRID_API_KEY}",
+        "Content-Type": "application/json",
+    }
+    data = {
+        "personalizations": [
+            {
+                "to": [{"email": to_email}],
+                "subject": subject,
+            }
+        ],
+        "from": {
+            "email": settings.SENDGRID_FROM_EMAIL,
+        },
+        "content": [
+            {
+                "type": "text/html",
+                "value": content,
+            }
+        ],
+    }
+
+    response = requests.post(url, headers=headers, json=data, timeout=30)
+    logger.info("SendGrid response: %s %s", response.status_code, response.text)
+    print("SendGrid response: %s %s", response.status_code, response.text)
+    return response
+
 @threaded
 def welcome_user(myuser):
     subject = "Welcome to Eduford"
-    message = "Hello " + myuser.first_name + "!! \n" + "Welcome to Eduford!! \nThank you for visiting our website\n. We have also sent you a confirmation email, please confirm your email address. \n\nThanking You\n\nThe Eduford Team."        
-    from_email = settings.EMAIL_HOST_USER
-    to_list = [myuser.email]
-    send_mail(subject, message, from_email, to_list, fail_silently=True)
-    # Email Address Confirmation Email
+    verification_note = (
+        "<p>We have also sent you a confirmation email, please confirm your email address.</p>"
+        if settings.USE_OTP
+        else "<p>Your account is ready to use.</p>"
+    )
+    message = f"""
+    <p>Hello {escape(myuser.first_name)}!!</p>
+    <p>Welcome to Eduford.</p>
+    <p>Thank you for visiting our website.</p>
+    {verification_note}
+    <p>Thanking You,<br>The Eduford Team.</p>
+    """
+    try:
+        send_email(myuser.email, subject, message)
+    except Exception:
+        logger.exception("Failed to send welcome email to %s.", myuser.email)
 
 @threaded
 def send_verification_email(request, myuser, _redirecting, otp, uid, token):
@@ -45,14 +110,10 @@ def send_verification_email(request, myuser, _redirecting, otp, uid, token):
         'confirmation_url': conf_url,
         "otp": otp
     })
-    email = EmailMessage(
-    email_subject,
-    message2,
-    settings.EMAIL_HOST_USER,
-    [myuser.email],
-    )
-    email.fail_silently = True
-    email.send()
+    try:
+        send_email(myuser.email, email_subject, message2)
+    except Exception:
+        logger.exception("Failed to send verification email to %s.", myuser.email)
 
 
 
@@ -109,16 +170,18 @@ def signup(request):
         login(request, user)
         myuser.first_name = fname
         myuser.last_name = lname
-        myuser.email_verified = False
-        # myuser.email_verified = True
+        myuser.email_verified = not settings.USE_OTP
         myuser.save()
-        # messages.success(request, "Your Account has been created succesfully!! Please check your email to confirm your email address in order to activate your account.")
         welcome_user(myuser)
-        
-        # messages.success(request, "Email has been sent to your email address!! Please confirm your email address to activate your account.")
+
+        if not settings.USE_OTP:
+            if as_json:
+                return redirect_after_verified_login(_redirecting, as_json=True)
+            return redirect_after_verified_login(_redirecting)
+
         send_verification(request, _redirecting)
         if as_json:
-                return JsonResponse({"status": "success", "message": "please activate your email"})
+            return JsonResponse({"status": "success", "message": "please activate your email"})
         if _redirecting:
             return redirect('/verify?redirect=_redirecting')
         return redirect('/verify')
@@ -162,23 +225,20 @@ def signin(request):
         user = authenticate(username=username, password=pass1)
 
         if user is not None and not user.email_verified:
+            if not settings.USE_OTP:
+                mark_user_verified(user)
+                login(request, user)
+                return redirect_after_verified_login(_redirecting, as_json=as_json)
             login(request, user)
             if as_json:
                 return JsonResponse({"status": "error", "message": "please activate your email"})
-            # messages.error(request, "Your Account is not activated!! Please check your email to activate your account.")
             if _redirecting:
                 return redirect('/verify?redirect=_redirecting')
             return redirect('/verify')
         
         if user is not None:
             login(request, user)
-            fname = user.first_name
-            if as_json:
-                return JsonResponse({"status": "success", "message": "", "url": "https://store.breathcure.com/default.asp"})
-            if request.GET.get('redirect', None) == "_redirecting":
-                return redirect('https://store.breathcure.com/default.asp')
-            # messages.success(request, "Logged In Sucessfully!!")
-            return redirect('core:index')
+            return redirect_after_verified_login(_redirecting, as_json=as_json)
         else:
             if as_json:
                 return JsonResponse({"status": "error", "message": "Bad Credentials!!"})
@@ -213,6 +273,10 @@ def generate_otp():
 # View to handle email verification
 
 def send_verification(request, _redirecting):
+    if not settings.USE_OTP:
+        mark_user_verified(request.user)
+        return
+
     email = request.user.email
     otp = generate_otp()
     # Save the OTP to the database
@@ -228,18 +292,29 @@ def send_verification_page(request):
         return redirect('authentication:signin')
     if request.user.email_verified:
         return redirect('core:index')
+
+    if not settings.USE_OTP:
+        mark_user_verified(request.user)
+        return JsonResponse({'status': 'success', 'email': request.user.email, 'otp_required': False})
     
     _redirecting = request.GET.get('redirect', None) == "_redirecting"
     send_verification(request, _redirecting)
     email_without_domain = request.user.email.split("@")[0]
     email = email_without_domain[:3]+"*"*(len(email_without_domain)-4)+email_without_domain[-1] + "@" + request.user.email.split("@")[1]
-    return JsonResponse({'status': 'success', 'email': email})
+    return JsonResponse({'status': 'success', 'email': email, 'otp_required': True})
 @csrf_exempt
 def verify_email(request):
     if not request.user.is_authenticated:
         return redirect('authentication:signin')
     if request.user.email_verified:
         return redirect('core:index')
+
+    if not settings.USE_OTP:
+        mark_user_verified(request.user)
+        if request.GET.get('redirect', None) == "_redirecting":
+            return redirect('https://store.breathcure.com/default.asp')
+        return redirect('core:index')
+
     if request.method == 'GET':
         email = request.user.email
         _redirecting = request.GET.get('redirect', None) == "_redirecting"
